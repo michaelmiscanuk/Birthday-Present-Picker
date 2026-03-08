@@ -6,7 +6,7 @@ import ChecklistItem from '@/components/ChecklistItem';
 import FloatingDecorations from '@/components/FloatingDecorations';
 
 const USER_ID_KEY = 'maya-birthday-uid';
-const POLL_INTERVAL_MS = 3000;
+const POLL_INTERVAL_MS = 10_000; // aligned with CDN s-maxage
 
 export default function HomePage() {
   const [items, setItems]       = useState<Item[]>([]);
@@ -27,7 +27,7 @@ export default function HomePage() {
   // ── Fetch current state ────────────────────────────────────────────────────
   const fetchState = useCallback(async () => {
     try {
-      const res = await fetch('/api/state', { cache: 'no-store' });
+      const res = await fetch('/api/state');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data: ChecklistState = await res.json();
       setItems(data.items);
@@ -40,11 +40,25 @@ export default function HomePage() {
     }
   }, []);
 
-  // ── Polling ────────────────────────────────────────────────────────────────
+  // ── Polling (paused when tab is hidden) ──────────────────────────────────
   useEffect(() => {
     fetchState();
-    const id = setInterval(fetchState, POLL_INTERVAL_MS);
-    return () => clearInterval(id);
+
+    // Skip the network call while the tab is backgrounded / screen locked.
+    const id = setInterval(() => {
+      if (document.visibilityState === 'visible') fetchState();
+    }, POLL_INTERVAL_MS);
+
+    // Immediately re-fetch when the user switches back to this tab.
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') fetchState();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+
+    return () => {
+      clearInterval(id);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [fetchState]);
 
   // ── Toggle ─────────────────────────────────────────────────────────────────
