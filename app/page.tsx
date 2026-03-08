@@ -190,7 +190,7 @@ export default function HomePage() {
           {!isLoading && total > 0 && (
             <div className="mx-auto mt-5 max-w-xs">
               <p className="mb-1 text-sm font-semibold text-pink-700 text-shadow-white">
-                {picked} z {total} dárků zarezervováno 💕
+                {picked} z {total} dárků už čeká na oslavu 💕
               </p>
               <div className="h-3 overflow-hidden rounded-full border border-pink-200 bg-pink-100">
                 <div
