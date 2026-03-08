@@ -183,7 +183,7 @@ export default function HomePage() {
             Maya – Narozeninová Oslava – 4 roky! 🎀
           </h1>
           <p className="mt-2 text-lg font-semibold text-purple-800 text-shadow-white">
-            seznam moznych darku pro Mayu
+            Seznam možných dárků pro Mayu
           </p>
 
           {/* Progress bar */}
