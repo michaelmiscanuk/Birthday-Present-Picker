@@ -237,8 +237,22 @@ export default function HomePage() {
           </div>
         )}
 
+        {/* ── Maya – mobile only: centered below grid ───────────────────────── */}
+        <div
+          className="pointer-events-none mt-6 flex justify-center lg:hidden"
+          aria-hidden="true"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/Maya.png"
+            alt="Maya"
+            className="h-[55vw] max-h-80 w-auto object-contain drop-shadow-2xl"
+            style={{ filter: 'drop-shadow(0 8px 32px rgba(80,160,255,0.35))' }}
+          />
+        </div>
+
         {/* ── Footer ────────────────────────────────────────────────────────── */}
-        <footer className="mt-14 flex flex-col items-center gap-3">
+        <footer className="mt-8 flex flex-col items-center gap-3">
           <p className="text-xs font-semibold text-white/90 text-shadow-dark">Aktualizuje se každých 10 s ✨</p>
           <button
             onClick={handleReset}
@@ -249,7 +263,7 @@ export default function HomePage() {
         </footer>
         </div>{/* end left 65% content */}
 
-        {/* Right Maya – fixed width, pushed to far right */}
+        {/* Right Maya – desktop only, fixed width, pushed to far right */}
         <div
           className="pointer-events-none hidden w-[25%] shrink-0 items-end justify-end lg:flex"
           aria-hidden="true"
