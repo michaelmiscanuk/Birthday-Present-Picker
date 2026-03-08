@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Item, ChecklistState } from '@/types';
 import ChecklistItem from '@/components/ChecklistItem';
 import FloatingDecorations from '@/components/FloatingDecorations';
+import SunParticles from '@/components/SunParticles';
 
 const USER_ID_KEY = 'maya-birthday-uid';
 const POLL_INTERVAL_MS = 10_000; // aligned with CDN s-maxage
@@ -167,23 +168,28 @@ export default function HomePage() {
   return (
     <main className="relative min-h-screen overflow-x-hidden">
       <FloatingDecorations />
+      <SunParticles />
 
-      <div className="relative z-10 mx-auto max-w-5xl px-4 pb-16 pt-10">
+      {/* ── Layout: 10% pad | content | Maya far right ──────────────────── */}
+      <div className="relative z-10 flex min-h-screen items-stretch">
+
+        {/* Content column – 10% left padding, takes remaining space */}
+        <div className="w-full px-4 pb-16 pt-10 lg:w-[75%] lg:pl-[10%] lg:pr-4">
 
         {/* ── Header ────────────────────────────────────────────────────────── */}
         <header className="mb-10 text-center">
           <div className="mb-2 text-6xl leading-none">🎂</div>
-          <h1 className="font-display text-4xl font-bold text-pink-600 drop-shadow-sm sm:text-5xl">
+          <h1 className="font-display text-4xl font-bold text-pink-700 text-shadow-white drop-shadow-sm sm:text-5xl">
             Maya – Narozeninová Oslava – 4 roky! 🎀
           </h1>
-          <p className="mt-2 text-lg text-purple-500">
-            👑 Vyber, co přineseš naší malé princezně! 🎁
+          <p className="mt-2 text-lg font-semibold text-purple-800 text-shadow-white">
+            seznam moznych darku pro Mayu
           </p>
 
           {/* Progress bar */}
           {!isLoading && total > 0 && (
             <div className="mx-auto mt-5 max-w-xs">
-              <p className="mb-1 text-sm text-pink-400">
+              <p className="mb-1 text-sm font-semibold text-pink-700 text-shadow-white">
                 {picked} z {total} dárků zarezervováno 💕
               </p>
               <div className="h-3 overflow-hidden rounded-full border border-pink-200 bg-pink-100">
@@ -200,7 +206,7 @@ export default function HomePage() {
         {isLoading && (
           <div className="py-20 text-center">
             <div className="animate-bounce text-5xl">🎀</div>
-            <p className="mt-4 text-lg text-pink-400">Načítám seznam přání…</p>
+            <p className="mt-4 text-lg font-semibold text-pink-700 text-shadow-white">Načítám seznam přání…</p>
           </div>
         )}
 
@@ -219,7 +225,7 @@ export default function HomePage() {
 
         {/* ── Grid ──────────────────────────────────────────────────────────── */}
         {!isLoading && (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
             {items.map((item) => (
               <ChecklistItem
                 key={item.id}
@@ -233,15 +239,31 @@ export default function HomePage() {
 
         {/* ── Footer ────────────────────────────────────────────────────────── */}
         <footer className="mt-14 flex flex-col items-center gap-3">
-          <p className="text-xs text-pink-300">Aktualizuje se každých 10 s ✨</p>
+          <p className="text-xs font-semibold text-white/90 text-shadow-dark">Aktualizuje se každých 10 s ✨</p>
           <button
             onClick={handleReset}
-            className="rounded-full border border-gray-200 px-4 py-1.5 text-xs text-gray-300 transition-all hover:border-red-300 hover:text-red-400"
+            className="rounded-full border border-white/40 bg-white/20 px-4 py-1.5 text-xs font-medium text-white/80 text-shadow-dark backdrop-blur-sm transition-all hover:border-red-300 hover:bg-white/30 hover:text-red-300"
           >
             🔄 Resetovat vše (pouze pro testování)
           </button>
         </footer>
-      </div>
+        </div>{/* end left 65% content */}
+
+        {/* Right Maya – fixed width, pushed to far right */}
+        <div
+          className="pointer-events-none hidden w-[25%] shrink-0 items-end justify-end lg:flex"
+          aria-hidden="true"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/Maya.png"
+            alt="Maya"
+            className="h-[88vh] w-full object-contain object-right-bottom drop-shadow-2xl"
+            style={{ filter: 'drop-shadow(0 8px 32px rgba(80,160,255,0.35))' }}
+          />
+        </div>
+
+      </div>{/* end two-column flex */}
     </main>
   );
 }
