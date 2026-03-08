@@ -1,9 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     experimental: {
-        // @libsql/client ships native binaries – keep it external so Next.js
-        // doesn't try to bundle it through webpack.
-        serverComponentsExternalPackages: ['@libsql/client'],
+        // Keep @libsql/client external so Next.js doesn't try to webpack-bundle
+        // the native binaries. Both the root package and the /http sub-path
+        // need to be listed.
+        serverComponentsExternalPackages: ['@libsql/client', '@libsql/client/http'],
     },
 };
 

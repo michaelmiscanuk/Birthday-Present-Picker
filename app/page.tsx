@@ -119,14 +119,19 @@ export default function HomePage() {
         body: JSON.stringify({ itemId, userId }),
       });
       const data = await res.json();
-      console.log('[toggle] server response:', data.success ? 'OK' : 'REFUSED', data.message ?? '');
+      console.log('[toggle] server response:', data.success ? 'OK' : 'REFUSED/FAILED', data.message ?? '');
 
-      if (data.state) {
-        // Record write time BEFORE updating state so polls know to bust cache
+      if (data.success && data.state) {
+        // Write confirmed persisted – record time to bust CDN cache on polls
         lastWriteRef.current = Date.now();
-        console.log('[toggle] write recorded at', new Date(lastWriteRef.current).toISOString(),
+        console.log('[toggle] write confirmed at', new Date(lastWriteRef.current).toISOString(),
           '– polls will bypass CDN for', CACHE_BUST_WINDOW_MS / 1000, 's');
         setItems(data.state.items);
+      } else {
+        // Write failed on server – revert optimistic update with real server state
+        console.warn('[toggle] write failed, reverting optimistic update. Server says:', data.message);
+        if (data.state) setItems(data.state.items);
+        else fetchState(true);
       }
     } catch (e) {
       console.error('[toggle] request failed, reverting via fresh fetch:', e);
