@@ -1,18 +1,25 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Item, ChecklistState } from '@/types';
 import ChecklistItem from '@/components/ChecklistItem';
 import FloatingDecorations from '@/components/FloatingDecorations';
 
 const USER_ID_KEY = 'maya-birthday-uid';
 const POLL_INTERVAL_MS = 10_000; // aligned with CDN s-maxage
+// How long after a write to keep busting CDN cache on polls (must be > s-maxage + stale-while-revalidate)
+const CACHE_BUST_WINDOW_MS = 30_000;
 
 export default function HomePage() {
-  const [items, setItems]       = useState<Item[]>([]);
-  const [userId, setUserId]     = useState<string>('');
+  const [items, setItems]         = useState<Item[]>([]);
+  const [userId, setUserId]       = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError]       = useState<string | null>(null);
+  const [error, setError]         = useState<string | null>(null);
+
+  // Tracks the last time THIS client wrote to the server.
+  // Polls within CACHE_BUST_WINDOW_MS of a write bypass CDN cache to avoid
+  // stale state overwriting the fresh result returned by /api/toggle.
+  const lastWriteRef = useRef<number>(0);
 
   // ── User identity (persisted in localStorage) ──────────────────────────────
   useEffect(() => {
@@ -20,20 +27,35 @@ export default function HomePage() {
     if (!id) {
       id = crypto.randomUUID();
       localStorage.setItem(USER_ID_KEY, id);
+      console.log('[identity] new userId generated:', id);
+    } else {
+      console.log('[identity] existing userId loaded:', id);
     }
     setUserId(id);
   }, []);
 
   // ── Fetch current state ────────────────────────────────────────────────────
-  const fetchState = useCallback(async () => {
+  // forceBust=true always bypasses CDN; otherwise bypasses only within the bust window.
+  const fetchState = useCallback(async (forceBust = false) => {
+    const msSinceWrite = Date.now() - lastWriteRef.current;
+    const shouldBust   = forceBust || msSinceWrite < CACHE_BUST_WINDOW_MS;
+    const url          = shouldBust ? `/api/state?t=${Date.now()}` : '/api/state';
+
+    console.log(
+      `[fetch] GET ${url} | bust=${shouldBust}` +
+      (lastWriteRef.current > 0 ? ` | ${Math.round(msSinceWrite / 1000)}s since last write` : ''),
+    );
+
     try {
-      const res = await fetch('/api/state');
+      const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data: ChecklistState = await res.json();
+      console.log('[fetch] received state | lastUpdated:', new Date(data.lastUpdated).toISOString(),
+        '| picked:', data.items.filter(i => i.pickedBy !== null).map(i => i.name).join(', ') || 'none');
       setItems(data.items);
       setError(null);
     } catch (e) {
-      console.error('[poll] failed:', e);
+      console.error('[fetch] failed:', e);
       setError('Problém s připojením – zkouším znovu…');
     } finally {
       setIsLoading(false);
@@ -42,16 +64,23 @@ export default function HomePage() {
 
   // ── Polling (paused when tab is hidden) ──────────────────────────────────
   useEffect(() => {
+    console.log('[poll] starting, interval:', POLL_INTERVAL_MS, 'ms');
     fetchState();
 
-    // Skip the network call while the tab is backgrounded / screen locked.
     const id = setInterval(() => {
-      if (document.visibilityState === 'visible') fetchState();
+      if (document.visibilityState === 'visible') {
+        console.log('[poll] tick');
+        fetchState();
+      } else {
+        console.log('[poll] tick skipped (tab hidden)');
+      }
     }, POLL_INTERVAL_MS);
 
-    // Immediately re-fetch when the user switches back to this tab.
     const onVisible = () => {
-      if (document.visibilityState === 'visible') fetchState();
+      if (document.visibilityState === 'visible') {
+        console.log('[poll] tab became visible – immediate fetch');
+        fetchState();
+      }
     };
     document.addEventListener('visibilitychange', onVisible);
 
@@ -67,7 +96,13 @@ export default function HomePage() {
 
     const current = items.find((i) => i.id === itemId);
     if (!current) return;
-    if (current.pickedBy !== null && current.pickedBy !== userId) return;
+    if (current.pickedBy !== null && current.pickedBy !== userId) {
+      console.warn('[toggle] blocked – item already taken by someone else:', itemId);
+      return;
+    }
+
+    const willPick = current.pickedBy === null;
+    console.log(`[toggle] ${willPick ? 'PICKING' : 'RELEASING'} item:`, current.name, '| itemId:', itemId);
 
     // Optimistic update
     setItems((prev) =>
@@ -84,21 +119,36 @@ export default function HomePage() {
         body: JSON.stringify({ itemId, userId }),
       });
       const data = await res.json();
-      if (data.state) setItems(data.state.items);
-    } catch {
-      fetchState(); // revert optimistic on error
+      console.log('[toggle] server response:', data.success ? 'OK' : 'REFUSED', data.message ?? '');
+
+      if (data.state) {
+        // Record write time BEFORE updating state so polls know to bust cache
+        lastWriteRef.current = Date.now();
+        console.log('[toggle] write recorded at', new Date(lastWriteRef.current).toISOString(),
+          '– polls will bypass CDN for', CACHE_BUST_WINDOW_MS / 1000, 's');
+        setItems(data.state.items);
+      }
+    } catch (e) {
+      console.error('[toggle] request failed, reverting via fresh fetch:', e);
+      fetchState(true);
     }
   };
 
   // ── Reset ──────────────────────────────────────────────────────────────────
   const handleReset = async () => {
     if (!confirm('🎂 Opravdu resetovat vše? Všechny výběry budou smazány!')) return;
+    console.log('[reset] resetting all picks');
     try {
       const res = await fetch('/api/reset', { method: 'POST' });
       const data = await res.json();
-      if (data.state) setItems(data.state.items);
-    } catch {
-      fetchState();
+      if (data.state) {
+        lastWriteRef.current = Date.now();
+        console.log('[reset] done');
+        setItems(data.state.items);
+      }
+    } catch (e) {
+      console.error('[reset] failed:', e);
+      fetchState(true);
     }
   };
 
@@ -178,7 +228,7 @@ export default function HomePage() {
 
         {/* ── Footer ────────────────────────────────────────────────────────── */}
         <footer className="mt-14 flex flex-col items-center gap-3">
-          <p className="text-xs text-pink-300">Aktualizuje se každé 3 s ✨</p>
+          <p className="text-xs text-pink-300">Aktualizuje se každých 10 s ✨</p>
           <button
             onClick={handleReset}
             className="rounded-full border border-gray-200 px-4 py-1.5 text-xs text-gray-300 transition-all hover:border-red-300 hover:text-red-400"
