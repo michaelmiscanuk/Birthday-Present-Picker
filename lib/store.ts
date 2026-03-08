@@ -1,5 +1,6 @@
 import type { ChecklistState, ToggleResponse } from '@/types';
 import { DEFAULT_ITEMS } from '@/data/items';
+import { createClient } from '@libsql/client';
 
 const KV_KEY = 'maya-birthday-checklist';
 
@@ -13,47 +14,46 @@ function makeInitial(): ChecklistState {
   };
 }
 
-// ── Turso HTTP client (created fresh per invocation – no WebSocket timeouts) ────
+// ── Turso client factory ───────────────────────────────────────────────────
 //
-// We deliberately do NOT singleton-cache the client because WebSocket-based
-// connections silently die between serverless invocations on Vercel. Using the
-// pure HTTP client (@libsql/client/http) avoids that entirely.
+// Vercel injects TURSO_DATABASE_URL as  libsql://...  (WebSocket scheme).
+// WebSocket connections die between serverless invocations, so we swap the
+// scheme to  https://  which forces the pure-HTTP transport.  A new client
+// is created on every invocation – that is intentional and correct for
+// stateless serverless functions.
 
-type LibsqlClient = import('@libsql/client').Client;
+function makeClient() {
+  const raw       = process.env.TURSO_DATABASE_URL ?? '';
+  const authToken = process.env.TURSO_AUTH_TOKEN   ?? '';
 
-async function getDb(): Promise<LibsqlClient | null> {
-  const url       = process.env.TURSO_DATABASE_URL;
-  const authToken = process.env.TURSO_AUTH_TOKEN;
-
-  if (!url || !authToken) {
-    console.warn('[store] TURSO_DATABASE_URL or TURSO_AUTH_TOKEN not set – using memory fallback');
+  if (!raw || !authToken) {
+    console.warn('[store] TURSO_DATABASE_URL or TURSO_AUTH_TOKEN not set');
     return null;
   }
 
-  console.log('[store] connecting to Turso (HTTP) url:', url.slice(0, 40) + '...');
-
-  try {
-    // Force HTTP transport – reliable in stateless serverless environments.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { createClient } = require('@libsql/client/http') as typeof import('@libsql/client');
-    const client = createClient({ url, authToken });
-
-    // Ensure table exists (idempotent)
-    await client.execute(
-      `CREATE TABLE IF NOT EXISTS checklist (
-         key   TEXT PRIMARY KEY,
-         value TEXT NOT NULL
-       )`,
-    );
-    console.log('[store] Turso connected + table ready');
-    return client;
-  } catch (e) {
-    console.error('[store] Failed to connect to Turso:', e);
-    return null;
-  }
+  // Force HTTP transport by converting  libsql://  →  https://
+  const url = raw.replace(/^libsql:\/\//, 'https://');
+  console.log('[store] creating HTTP client, url:', url.slice(0, 50) + '...');
+  return createClient({ url, authToken });
 }
 
-// ── KV-style helpers ─────────────────────────────────────────────────────────────────
+// ── DB init (idempotent table creation) ────────────────────────────────────
+
+async function getDb() {
+  const client = makeClient();
+  if (!client) return null;
+
+  await client.execute(
+    `CREATE TABLE IF NOT EXISTS checklist (
+       key   TEXT PRIMARY KEY,
+       value TEXT NOT NULL
+     )`,
+  );
+  console.log('[store] DB ready');
+  return client;
+}
+
+// ── KV-style helpers ───────────────────────────────────────────────────────
 
 async function kvGet(): Promise<ChecklistState | null> {
   const db = await getDb();
@@ -64,11 +64,11 @@ async function kvGet(): Promise<ChecklistState | null> {
       args: [KV_KEY],
     });
     if (result.rows.length === 0) {
-      console.log('[store] kvGet: no row found for key', KV_KEY);
+      console.log('[store] kvGet: no row yet for key', KV_KEY);
       return null;
     }
     const parsed = JSON.parse(result.rows[0].value as string) as ChecklistState;
-    console.log('[store] kvGet: read state, lastUpdated:', new Date(parsed.lastUpdated).toISOString(),
+    console.log('[store] kvGet: lastUpdated:', new Date(parsed.lastUpdated).toISOString(),
       '| picked:', parsed.items.filter(i => i.pickedBy !== null).map(i => i.name).join(', ') || 'none');
     return parsed;
   } catch (e) {
@@ -77,24 +77,22 @@ async function kvGet(): Promise<ChecklistState | null> {
   }
 }
 
-// Throws on failure so callers know the write did not persist.
+// Intentionally throws on ANY failure (no DB connection OR SQL error).
+// This ensures callers can detect that the state was NOT persisted.
 async function kvSet(state: ChecklistState): Promise<void> {
   const db = await getDb();
   if (!db) {
-    console.warn('[store] kvSet: no DB connection, storing in memory only');
-    _mem.state = state;
-    return;
+    throw new Error('No database connection – TURSO credentials missing or connection failed');
   }
-  console.log('[store] kvSet: writing state, lastUpdated:', new Date(state.lastUpdated).toISOString());
-  // Let the error propagate so the caller (toggleItem) can signal failure.
+  console.log('[store] kvSet: writing, lastUpdated:', new Date(state.lastUpdated).toISOString());
   await db.execute({
     sql:  'INSERT OR REPLACE INTO checklist (key, value) VALUES (?, ?)',
     args: [KV_KEY, JSON.stringify(state)],
   });
-  console.log('[store] kvSet: write committed to Turso ✓');
+  console.log('[store] kvSet: committed ✓');
 }
 
-// ── Public API ────────────────────────────────────────────────────────────────
+// ── Public API ─────────────────────────────────────────────────────────────
 
 export async function getState(): Promise<ChecklistState> {
   const stored = await kvGet();
@@ -107,7 +105,7 @@ export async function getState(): Promise<ChecklistState> {
   try {
     await kvSet(initial);
   } catch (e) {
-    console.error('[store] getState: failed to persist initial state:', e);
+    console.error('[store] getState: failed to persist initial state, using memory:', e);
     _mem.state = initial;
   }
   return initial;
@@ -126,7 +124,7 @@ export async function toggleItem(
   }
 
   if (item.pickedBy !== null && item.pickedBy !== userId) {
-    console.warn('[store] toggleItem: item already taken by', item.pickedBy);
+    console.warn('[store] toggleItem: already taken by', item.pickedBy);
     return { success: false, state, message: 'Already reserved by someone else' };
   }
 
@@ -142,9 +140,7 @@ export async function toggleItem(
     await kvSet(next);
     return { success: true, state: next };
   } catch (e) {
-    console.error('[store] toggleItem: write failed – change NOT persisted:', e);
-    // Return success:false so the client knows to NOT record a write time
-    // and will re-fetch the real server state on next poll.
+    console.error('[store] toggleItem: write failed – NOT persisted:', e);
     return { success: false, state, message: 'Write failed – please try again' };
   }
 }
@@ -160,4 +156,3 @@ export async function resetState(): Promise<ChecklistState> {
   }
   return fresh;
 }
-
