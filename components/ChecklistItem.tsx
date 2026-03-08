@@ -86,19 +86,19 @@ export default function ChecklistItem({ item, userId, onToggle }: Props) {
       {/* Status line */}
       {isAvailable && (
         <span className="text-[10px] font-medium text-pink-300 group-hover:text-pink-500">
-          klikni pro rezervaci ✨
+          Udělat radost tímto dárkem ✨
         </span>
       )}
       {isMine && (
         <span className="text-[10px] font-semibold text-rose-500">
-          Ty to přineseš! 💕
+          Děkuji 💕
           <span className="mt-0.5 block text-rose-300 group-hover:text-rose-500">
             (klikni pro zrušení)
           </span>
         </span>
       )}
       {isTaken && (
-        <span className="text-[10px] text-gray-400">Zarezervováno 💕</span>
+        <span className="text-[10px] text-gray-400">Už je slíbený dárek! 💕</span>
       )}
     </button>
   );
