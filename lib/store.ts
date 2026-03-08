@@ -1,11 +1,9 @@
 import type { ChecklistState, ToggleResponse } from '@/types';
 import { DEFAULT_ITEMS } from '@/data/items';
-import { kv } from '@vercel/kv';
 
 const KV_KEY = 'maya-birthday-checklist';
 
-// ── In-memory fallback for local dev without KV credentials ──────────────────
-// NOTE: Not persistent across serverless invocations; fine for local testing.
+// ── In-memory fallback for local dev without Turso credentials ──────────────
 const _mem: { state: ChecklistState | null } = { state: null };
 
 function makeInitial(): ChecklistState {
@@ -15,29 +13,67 @@ function makeInitial(): ChecklistState {
   };
 }
 
-// ── KV helpers ────────────────────────────────────────────────────────────────
+// ── Turso libSQL client (lazy singleton) ─────────────────────────────────
+type DbHandle = { client: import('@libsql/client').Client; ready: boolean };
+let _db: DbHandle | null = null;
+
+async function getDb(): Promise<import('@libsql/client').Client | null> {
+  const url       = process.env.TURSO_DATABASE_URL;
+  const authToken = process.env.TURSO_AUTH_TOKEN;
+  if (!url || !authToken) return null;
+
+  if (!_db) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { createClient } = require('@libsql/client') as typeof import('@libsql/client');
+    const client = createClient({ url, authToken });
+    _db = { client, ready: false };
+  }
+
+  if (!_db.ready) {
+    // Idempotent – safe to run on every cold start
+    await _db.client.execute(
+      `CREATE TABLE IF NOT EXISTS checklist (
+         key   TEXT PRIMARY KEY,
+         value TEXT NOT NULL
+       )`,
+    );
+    _db.ready = true;
+  }
+
+  return _db.client;
+}
+
+// ── KV-style helpers (store the whole state as one JSON row) ───────────────
 
 async function kvGet(): Promise<ChecklistState | null> {
-  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
-    return null;
-  }
+  const db = await getDb();
+  if (!db) return null;
   try {
-    return await kv.get(KV_KEY) as ChecklistState | null;
+    const result = await db.execute({
+      sql:  'SELECT value FROM checklist WHERE key = ?',
+      args: [KV_KEY],
+    });
+    if (result.rows.length === 0) return null;
+    return JSON.parse(result.rows[0].value as string) as ChecklistState;
   } catch (e) {
-    console.warn('[store] KV read failed, using memory fallback:', e);
+    console.warn('[store] Turso read failed, using memory fallback:', e);
     return null;
   }
 }
 
 async function kvSet(state: ChecklistState): Promise<void> {
-  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
+  const db = await getDb();
+  if (!db) {
     _mem.state = state;
     return;
   }
   try {
-    await kv.set(KV_KEY, state);
+    await db.execute({
+      sql:  'INSERT OR REPLACE INTO checklist (key, value) VALUES (?, ?)',
+      args: [KV_KEY, JSON.stringify(state)],
+    });
   } catch (e) {
-    console.warn('[store] KV write failed, using memory fallback:', e);
+    console.warn('[store] Turso write failed, using memory fallback:', e);
     _mem.state = state;
   }
 }
@@ -66,12 +102,10 @@ export async function toggleItem(
     return { success: false, state, message: 'Item not found' };
   }
 
-  // Someone else already picked it → refuse
   if (item.pickedBy !== null && item.pickedBy !== userId) {
     return { success: false, state, message: 'Already reserved by someone else' };
   }
 
-  // Toggle: pick if free, release if owned by this user
   const newPickedBy = item.pickedBy === userId ? null : userId;
   const items = state.items.map((i) =>
     i.id === itemId ? { ...i, pickedBy: newPickedBy } : i,
