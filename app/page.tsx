@@ -180,8 +180,9 @@ export default function HomePage() {
         {/* ── Header ────────────────────────────────────────────────────────── */}
         <header className="mb-10 text-center">
           <div className="mb-2 text-6xl leading-none">🎂</div>
-          <h1 className="font-display text-4xl font-bold text-pink-700 text-shadow-white drop-shadow-sm sm:text-5xl">
-            Maya – Narozeninová Oslava – 4 roky! 🎀
+          <h1 className="font-display font-bold text-pink-700 text-shadow-white drop-shadow-sm">
+            <span className="block text-6xl sm:text-7xl">Maya</span>
+            <span className="block text-3xl sm:text-4xl mt-1">Narozeninová Oslava – 4 roky! 🎀</span>
           </h1>
           <p className="mt-2 text-lg font-semibold text-purple-800 text-shadow-white">
             Seznam možných dárků pro Mayu
