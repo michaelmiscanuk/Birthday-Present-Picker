@@ -170,11 +170,11 @@ export default function HomePage() {
       <FloatingDecorations />
       <SunParticles />
 
-      {/* ── Layout: 10% pad | content | Maya far right ──────────────────── */}
-      <div className="relative z-10 flex min-h-screen items-stretch">
+      {/* ── Layout: centered content ──────────────────────────────────── */}
+      <div className="relative z-10 flex min-h-screen justify-center">
 
-        {/* Content column – 10% left padding, takes remaining space */}
-        <div className="w-full px-4 pb-16 pt-10 lg:w-[75%] lg:pl-[10%] lg:pr-4">
+        {/* Content column */}
+        <div className="mx-auto w-full max-w-4xl px-4 pb-16 pt-10">
 
         {/* ── Header ────────────────────────────────────────────────────────── */}
         <header className="mb-10 text-center">
@@ -237,20 +237,6 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* ── Maya – mobile only: centered below grid ───────────────────────── */}
-        <div
-          className="pointer-events-none mt-6 flex justify-center lg:hidden"
-          aria-hidden="true"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/Maya.png"
-            alt="Maya"
-            className="h-[55vw] max-h-80 w-auto object-contain drop-shadow-2xl"
-            style={{ filter: 'drop-shadow(0 8px 32px rgba(80,160,255,0.35))' }}
-          />
-        </div>
-
         {/* ── Footer ────────────────────────────────────────────────────────── */}
         <footer className="mt-8 flex flex-col items-center gap-3">
           <p className="text-xs font-semibold text-white/90 text-shadow-dark">Aktualizuje se každých 10 s ✨</p>
@@ -261,23 +247,9 @@ export default function HomePage() {
             🔄 Resetovat vše (pouze pro testování)
           </button>
         </footer>
-        </div>{/* end left 65% content */}
+        </div>{/* end content */}
 
-        {/* Right Maya – desktop only, fixed width, pushed to far right */}
-        <div
-          className="pointer-events-none hidden w-[25%] shrink-0 items-end justify-end lg:flex"
-          aria-hidden="true"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/Maya.png"
-            alt="Maya"
-            className="h-[88vh] w-full object-contain object-right-bottom drop-shadow-2xl"
-            style={{ filter: 'drop-shadow(0 8px 32px rgba(80,160,255,0.35))' }}
-          />
-        </div>
-
-      </div>{/* end two-column flex */}
+      </div>{/* end flex */}
     </main>
   );
 }
