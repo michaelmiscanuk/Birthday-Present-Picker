@@ -1,20 +1,25 @@
 import type { Item } from '@/types';
 
-/**
- * Edit this list to customise what guests can bring.
- * Only `name` and `emoji` matter here; `pickedBy` is always null at init.
- */
 export const DEFAULT_ITEMS: Item[] = [
-  { id: '1',  name: 'Jednorožec plyšák',        emoji: '🦄', pickedBy: null },
-  { id: '2',  name: 'Sada na tvoření',           emoji: '🎨', pickedBy: null },
-  { id: '3',  name: 'Pohádkové knížky',          emoji: '📚', pickedBy: null },
-  { id: '4',  name: 'Play-Doh modelína',         emoji: '🌈', pickedBy: null },
-  { id: '5',  name: 'Kostým princezny',          emoji: '👑', pickedBy: null },
-  { id: '6',  name: 'Puzzle',                    emoji: '🧩', pickedBy: null },
-  { id: '7',  name: 'Panenka',                   emoji: '🪆', pickedBy: null },
-  { id: '8',  name: 'Hudební hračka',            emoji: '🎵', pickedBy: null },
-  { id: '9',  name: 'Bublifuk',                  emoji: '🫧', pickedBy: null },
-  { id: '10', name: 'Pastelky a omalovánky',     emoji: '🖍️', pickedBy: null },
-  { id: '11', name: 'Hračky do koupele',         emoji: '🛁', pickedBy: null },
-  { id: '12', name: 'Čajová souprava',           emoji: '🫖', pickedBy: null },
+  { id: '1',  name: 'Vybavení pro panenky',              emoji: '👶', link: 'https://www.nejbaby.cz/p/panenky-pece-o-dite-velka-sada/',                                                                                                                                                    pickedBy: null },
+  { id: '2',  name: 'Kniha Včelí úl',                   emoji: '🐝', link: 'https://albi.cz/kniha-vceli-ul/?cjdata=MXxZfDB8WXww&cjevent=b9e580d6344011f1821500190a18b8f8',                                                                                                                  pickedBy: null },
+  { id: '3',  name: 'Postýlka pro panenku',             emoji: '🛏️', link: 'https://www.nejbaby.cz/p/cestovni-postylka-pro-panenky-kov-plast-v-tasce/',                                                                                                                                         pickedBy: null },
+  { id: '4',  name: 'Kniha Už vím jak',                 emoji: '🔍', link: 'https://albi.cz/kniha-uz-vim-jak/?srovnameczclid=63388dba-3440-11f1-b572-bc2411008cd3',                                                                                                                              pickedBy: null },
+  { id: '5',  name: 'Kreativní kufřík Ledové království', emoji: '❄️', link: 'https://www.dobre-knihy.cz/ledove-kralovstvi-kreativni-kufrik',                                                                                                                                                   pickedBy: null },
+  { id: '6',  name: 'Hlava na česání',                  emoji: '👱‍♀️', link: 'https://www.action.com/cs-cz/p/3219709/hlavicka-na-cesani-barbie/',                                                                                                                                              pickedBy: null },
+  { id: '7',  name: 'Kniha Zvířátka na statku',         emoji: '🐄', link: 'https://www.dobre-knihy.cz/cti-a-skladej-zviratka-na-statku',                                                                                                                                                       pickedBy: null },
+  { id: '8',  name: 'Pokladna na hraní',                emoji: '🛒', link: 'https://allegro.cz/nabidka/pokladna-s-klavirni-hudbou-hracka-vzdelavaci-modro-cervena-18286635355?utm_feed=cb859801-e78b-4820-9b32-5345d997b58b',                                                                    pickedBy: null },
+  { id: '9',  name: 'Kniha Zpívání',                    emoji: '🎶', link: 'https://www.dobre-knihy.cz/z-sverak-a-j-uhlir-zpivani-s-piankem-1',                                                                                                                                                 pickedBy: null },
+  { id: '10', name: 'Kroket',                           emoji: '🏑', link: 'https://www.action.com/cs-cz/p/3222195/kroket-hra-se-zviraty/',                                                                                                                                                      pickedBy: null },
+  { id: '11', name: 'Sada na zmrzlinu',                 emoji: '🍦', link: 'https://www.action.com/cs-cz/p/3013390/kouzelna-hraci-sada-se-strojem-na-zmrzlinu-play-doh/',                                                                                                                       pickedBy: null },
+  { id: '12', name: 'Malování vodou',                   emoji: '🖌️', link: 'https://www.dobre-knihy.cz/ledove-kralovstvi-maluj-vodou-a4',                                                                                                                                                      pickedBy: null },
+  { id: '13', name: 'Kniha Svět zvířat',                emoji: '🦁', link: 'https://albi.cz/kniha-svet-zvirat/',                                                                                                                                                                                pickedBy: null },
+  { id: '14', name: 'Závodní věž',                      emoji: '🏎️', link: 'https://www.action.com/cs-cz/p/3219896/zavodni-a-zachranna-vez-paw-patrol/',                                                                                                                                       pickedBy: null },
+  { id: '15', name: 'Stíratelná kniha',                 emoji: '✏️', link: 'https://www.dobre-knihy.cz/nekonecna-zabava-ledove-kralovstvi-napis-a-smaz-zas-a-znovu#description',                                                                                                                 pickedBy: null },
+  { id: '16', name: 'Noční lampička (modrá)',           emoji: '🌸', link: 'https://www.action.com/cs-cz/p/3217634/plysova-nocni-lampicka-mini-matters/',                                                                                                                                        pickedBy: null },
+  { id: '17', name: 'Kniha Ledové království',          emoji: '📖', link: 'https://www.dobre-knihy.cz/ledove-kralovstvi-slavime-narozeniny',                                                                                                                                                    pickedBy: null },
+  { id: '18', name: 'Bourací autíčka',                  emoji: '💥', link: 'https://www.action.com/cs-cz/p/3216955/bouraci-auticka-na-dalkove-ovladani-gear2play/',                                                                                                                             pickedBy: null },
+  { id: '19', name: 'Autíčka Hot Wheels',               emoji: '🚗', link: 'https://www.action.com/cs-cz/p/3017018/auticka-hot-wheels/',                                                                                                                                                        pickedBy: null },
+  { id: '20', name: 'Kniha Skřítek Lesánek',            emoji: '🌿', link: 'https://www.dobre-knihy.cz/skritek-lesanek-a-zviratka',                                                                                                                                                             pickedBy: null },
+  { id: '21', name: 'Sada nářadí',                      emoji: '🔧', link: 'https://www.action.com/cs-cz/p/3015560/sada-naradi-na-hrani/',                                                                                                                                                      pickedBy: null },
 ];

@@ -2,6 +2,7 @@ export interface Item {
   id: string;
   name: string;
   emoji: string;
+  link?: string;
   pickedBy: string | null;
 }
 

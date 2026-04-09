@@ -5,6 +5,7 @@ import type { Item, ChecklistState } from '@/types';
 import ChecklistItem from '@/components/ChecklistItem';
 import FloatingDecorations from '@/components/FloatingDecorations';
 import SunParticles from '@/components/SunParticles';
+import config from '@/config';
 
 const USER_ID_KEY = 'maya-birthday-uid';
 const POLL_INTERVAL_MS = 10_000; // aligned with CDN s-maxage
@@ -192,9 +193,9 @@ export default function HomePage() {
               <p className="mb-1 text-sm font-semibold text-pink-700 text-shadow-white">
                 {picked} z {total} dárků už čeká na oslavu 💕
               </p>
-              <div className="h-3 overflow-hidden rounded-full border border-pink-200 bg-pink-100">
+              <div className="h-3 overflow-hidden rounded-full border border-white/40 bg-white/30">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-pink-400 to-rose-400 transition-all duration-500"
+                  className="h-full rounded-full bg-gradient-to-r from-red-400 via-yellow-400 via-green-400 via-blue-400 to-purple-500 transition-all duration-500"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -226,10 +227,11 @@ export default function HomePage() {
         {/* ── Grid ──────────────────────────────────────────────────────────── */}
         {!isLoading && (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
-            {items.map((item) => (
+            {items.map((item, index) => (
               <ChecklistItem
                 key={item.id}
                 item={item}
+                index={index}
                 userId={userId}
                 onToggle={handleToggle}
               />
@@ -238,15 +240,17 @@ export default function HomePage() {
         )}
 
         {/* ── Footer ────────────────────────────────────────────────────────── */}
-        <footer className="mt-8 flex flex-col items-center gap-3">
-          <p className="text-xs font-semibold text-white/90 text-shadow-dark">Aktualizuje se každých 10 s ✨</p>
-          <button
-            onClick={handleReset}
-            className="rounded-full border border-white/40 bg-white/20 px-4 py-1.5 text-xs font-medium text-white/80 text-shadow-dark backdrop-blur-sm transition-all hover:border-red-300 hover:bg-white/30 hover:text-red-300"
-          >
-            🔄 Resetovat vše (pouze pro testování)
-          </button>
-        </footer>
+        {config.test_mode && (
+          <footer className="mt-8 flex flex-col items-center gap-3">
+            <p className="text-xs font-semibold text-white/90 text-shadow-dark">Aktualizuje se každých 10 s ✨</p>
+            <button
+              onClick={handleReset}
+              className="rounded-full border border-white/40 bg-white/20 px-4 py-1.5 text-xs font-medium text-white/80 text-shadow-dark backdrop-blur-sm transition-all hover:border-red-300 hover:bg-white/30 hover:text-red-300"
+            >
+              🔄 Resetovat vše (pouze pro testování)
+            </button>
+          </footer>
+        )}
         </div>{/* end content */}
 
       </div>{/* end flex */}
