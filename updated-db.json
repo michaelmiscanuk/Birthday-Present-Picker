@@ -1,0 +1,194 @@
+{
+    "items": [
+        {
+            "id": "1",
+            "name": "Vybavení pro panenky.",
+            "emoji": "👶",
+            "link": "https://www.nejbaby.cz/p/panenky-pece-o-dite-velka-sada/",
+            "pickedBy": null
+        },
+        {
+            "id": "2",
+            "name": "Kniha Včelí úl.",
+            "emoji": "🐝",
+            "link": "https://albi.cz/kniha-vceli-ul/?cjdata=MXxZfDB8WXww&cjevent=b9e580d6344011f1821500190a18b8f8",
+            "pickedBy": "ace11976-c1db-49bc-8be2-2d307007fc4d"
+        },
+        {
+            "id": "3",
+            "name": "Postýlka pro panenku",
+            "emoji": "🛏️",
+            "link": "https://www.nejbaby.cz/p/cestovni-postylka-pro-panenky-kov-plast-v-tasce/",
+            "pickedBy": "daf82396-8504-45f8-a280-87b88ea89659"
+        },
+        {
+            "id": "4",
+            "name": "Kniha Už vím jak",
+            "emoji": "🔍",
+            "link": "https://albi.cz/kniha-uz-vim-jak/?srovnameczclid=63388dba-3440-11f1-b572-bc2411008cd3",
+            "pickedBy": "6cc354a0-0e09-4a6d-9b01-2f6be2656294"
+        },
+        {
+            "id": "5",
+            "name": "Kreativní kufřík Ledové království",
+            "emoji": "❄️",
+            "link": "https://www.dobre-knihy.cz/ledove-kralovstvi-kreativni-kufrik",
+            "pickedBy": "5169a8d7-7c1e-456f-9c48-2d780563116a"
+        },
+        {
+            "id": "6",
+            "name": "Hlava na česání",
+            "emoji": "👱\u200d♀️",
+            "link": "https://www.action.com/cs-cz/p/3219709/hlavicka-na-cesani-barbie/",
+            "pickedBy": null
+        },
+        {
+            "id": "7",
+            "name": "Kniha Zvířátka na statku",
+            "emoji": "🐄",
+            "link": "https://www.dobre-knihy.cz/cti-a-skladej-zviratka-na-statku",
+            "pickedBy": "16df0e53-2c61-4640-9f94-c45fd897e972"
+        },
+        {
+            "id": "8",
+            "name": "Pokladna na hraní",
+            "emoji": "🛒",
+            "link": "https://allegro.cz/nabidka/pokladna-s-klavirni-hudbou-hracka-vzdelavaci-modro-cervena-18286635355?utm_feed=cb859801-e78b-4820-9b32-5345d997b58b",
+            "pickedBy": "3c1259dd-73ad-4d6c-95cb-aeaa2665ab6e"
+        },
+        {
+            "id": "9",
+            "name": "Kniha Zpívání",
+            "emoji": "🎶",
+            "link": "https://www.dobre-knihy.cz/z-sverak-a-j-uhlir-zpivani-s-piankem-1",
+            "pickedBy": "86d43f7b-26de-46e6-a69c-b4cbad5cd0e1"
+        },
+        {
+            "id": "10",
+            "name": "Kroket",
+            "emoji": "🏑",
+            "link": "https://www.action.com/cs-cz/p/3222195/kroket-hra-se-zviraty/",
+            "pickedBy": "6aaaf577-2e24-49d5-9d97-58df5e9ce9b4"
+        },
+        {
+            "id": "11",
+            "name": "Sada na zmrzlinu",
+            "emoji": "🍦",
+            "link": "https://www.action.com/cs-cz/p/3013390/kouzelna-hraci-sada-se-strojem-na-zmrzlinu-play-doh/",
+            "pickedBy": "d76f12af-e6bb-4ad6-a39a-4d009bfd5089"
+        },
+        {
+            "id": "12",
+            "name": "Malování vodou",
+            "emoji": "🖌️",
+            "link": "https://www.dobre-knihy.cz/ledove-kralovstvi-maluj-vodou-a4",
+            "pickedBy": "632de804-4092-43fa-885a-68574dc9ca15"
+        },
+        {
+            "id": "13",
+            "name": "Kniha Svět zvířat",
+            "emoji": "🦁",
+            "link": "https://albi.cz/kniha-svet-zvirat/",
+            "pickedBy": null
+        },
+        {
+            "id": "14",
+            "name": "Závodní věž",
+            "emoji": "🏎️",
+            "link": "https://www.action.com/cs-cz/p/3219896/zavodni-a-zachranna-vez-paw-patrol/",
+            "pickedBy": null
+        },
+        {
+            "id": "15",
+            "name": "Stíratelná kniha",
+            "emoji": "✏️",
+            "link": "https://www.dobre-knihy.cz/nekonecna-zabava-ledove-kralovstvi-napis-a-smaz-zas-a-znovu#description",
+            "pickedBy": "59929829-8f19-46b4-8bba-1a6fb4c089fa"
+        },
+        {
+            "id": "16",
+            "name": "Noční lampička (růžová)",
+            "emoji": "🌸",
+            "link": "https://www.action.com/cs-cz/p/3217634/plysova-nocni-lampicka-mini-matters/",
+            "pickedBy": "cc46e763-0240-4129-a931-00a7408052ba"
+        },
+        {
+            "id": "17",
+            "name": "Kniha Ledové království",
+            "emoji": "📖",
+            "link": "https://www.dobre-knihy.cz/ledove-kralovstvi-slavime-narozeniny",
+            "pickedBy": "16df0e53-2c61-4640-9f94-c45fd897e972"
+        },
+        {
+            "id": "18",
+            "name": "Bourací autíčka",
+            "emoji": "💥",
+            "link": "https://www.action.com/cs-cz/p/3216955/bouraci-auticka-na-dalkove-ovladani-gear2play/",
+            "pickedBy": null
+        },
+        {
+            "id": "19",
+            "name": "Autíčka Hot Wheels",
+            "emoji": "🚗",
+            "link": "https://www.action.com/cs-cz/p/3017018/auticka-hot-wheels/",
+            "pickedBy": null
+        },
+        {
+            "id": "20",
+            "name": "Kniha Skřítek Lesánek",
+            "emoji": "🌿",
+            "link": "https://www.dobre-knihy.cz/skritek-lesanek-a-zviratka",
+            "pickedBy": null
+        },
+        {
+            "id": "21",
+            "name": "Sada nářadí",
+            "emoji": "🔧",
+            "link": "https://www.action.com/cs-cz/p/3015560/sada-naradi-na-hrani/",
+            "pickedBy": null
+        },
+        {
+            "id": "22",
+            "name": "Osvětlený glóbus 25 cm",
+            "emoji": "🌍",
+            "link": "https://www.megaknihy.cz/mapy-sveta-a-globusy/25745227-fyzicky-osvetleny-globus-25-cm-v-cestine.html",
+            "pickedBy": null
+        },
+        {
+            "id": "23",
+            "name": "Hra Jméno Zvíře Barva Věc",
+            "emoji": "🎯",
+            "link": "https://www.megaknihy.cz/nezarazeno/4707407-hry-pro-predskolaky-jmeno-zvire-barva-vec.html",
+            "pickedBy": null
+        },
+        {
+            "id": "24",
+            "name": "Taneční podložka",
+            "emoji": "🎵",
+            "link": "https://www.megaknihy.cz/kreativni-hracky/4801022-interaktivni-tanecni-podlozka-30x60cm.html",
+            "pickedBy": null
+        },
+        {
+            "id": "25",
+            "name": "Dětský fotoaparát (králíček)",
+            "emoji": "📷",
+            "link": "https://www.megaknihy.cz/digitalni-fotoparaty/26030245-leventi-detsky-digitalni-fotoaparat-s-motivem-kralicek-ruzovy.html",
+            "pickedBy": null
+        },
+        {
+            "id": "26",
+            "name": "Kouzelný tablet - písanka",
+            "emoji": "📝",
+            "link": "https://www.megaknihy.cz/nezarazeno/4048576-prvni-pisanka-kouzelny-tablet-stiratelne-karty.html",
+            "pickedBy": null
+        },
+        {
+            "id": "27",
+            "name": "LEGO DUPLO Traktor a tržnice",
+            "emoji": "🚜",
+            "link": "https://www.megaknihy.cz/lego-duplo/26283906-lego-duplo-lego-10468-traktor-a-trznice.html",
+            "pickedBy": null
+        }
+    ],
+    "lastUpdated": 1777593600000
+}
